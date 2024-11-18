@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ServiceUser } from "../types/ServiceUser";
 
 interface Props {
@@ -6,6 +6,33 @@ interface Props {
 }
 
 const ServiceUserList: React.FC<Props> = ({ users }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<ServiceUser | null>(null);
+  const [updatedUser, setUpdatedUser] = useState<ServiceUser | null>(null);
+
+  const handleEditClick = (user: ServiceUser) => {
+    setSelectedUser(user);
+    setUpdatedUser({ ...user }); // Create a copy of the user data for editing
+    setIsModalOpen(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    if (updatedUser) {
+      setUpdatedUser({
+        ...updatedUser,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
+
+  const handleSaveChanges = () => {
+    if (updatedUser) {
+      // Here, you can update the user in the state or make an API call to update the data
+      console.log("Updated User: ", updatedUser);
+      setIsModalOpen(false);
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       {/* Table for larger screens */}
@@ -39,7 +66,10 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
                 {new Date(user.nextAppointment).toLocaleString()}
               </td>
               <td className="p-3 space-x-2">
-                <button className="px-3 py-1 bg-blue-500 text-white rounded-md">
+                <button
+                  onClick={() => handleEditClick(user)}
+                  className="px-3 py-1 bg-blue-500 text-white rounded-md"
+                >
                   Edit
                 </button>
                 <button className="px-3 py-1 bg-gray-500 text-white rounded-md">
@@ -80,7 +110,10 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
               {new Date(user.nextAppointment).toLocaleString()}
             </p>
             <div className="flex space-x-2 mt-2">
-              <button className="flex-grow px-4 py-2 bg-blue-500 text-white rounded-md">
+              <button
+                onClick={() => handleEditClick(user)}
+                className="flex-grow px-4 py-2 bg-blue-500 text-white rounded-md"
+              >
                 Edit
               </button>
               <button className="flex-grow px-4 py-2 bg-gray-500 text-white rounded-md">
@@ -90,6 +123,94 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
           </div>
         ))}
       </div>
+
+      {/* Modal for editing user details */}
+      {isModalOpen && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-2xl font-semibold mb-4">Edit User</h2>
+            <form>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2" htmlFor="name">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={updatedUser?.name}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2" htmlFor="age">
+                  Age
+                </label>
+                <input
+                  type="number"
+                  id="age"
+                  name="age"
+                  value={updatedUser?.age}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-2"
+                  htmlFor="careStatus"
+                >
+                  Care Status
+                </label>
+                <select
+                  id="careStatus"
+                  name="careStatus"
+                  value={updatedUser?.careStatus}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-sm font-medium mb-2"
+                  htmlFor="nextAppointment"
+                >
+                  Next Appointment
+                </label>
+                <input
+                  type="datetime-local"
+                  id="nextAppointment"
+                  name="nextAppointment"
+                  value={updatedUser?.nextAppointment}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex justify-between space-x-2">
+                <button
+                  type="button"
+                  onClick={handleSaveChanges}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-md"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
