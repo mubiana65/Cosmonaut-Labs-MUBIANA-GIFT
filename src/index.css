@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+  .ml-60 {
+    margin-left: 4rem; /* Collapse sidebar on mobile */
+  }
+
+  .fixed {
+    width: 100%;
+  }
+}
