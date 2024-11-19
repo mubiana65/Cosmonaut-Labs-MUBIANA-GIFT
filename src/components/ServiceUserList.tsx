@@ -6,14 +6,20 @@ interface Props {
 }
 
 const ServiceUserList: React.FC<Props> = ({ users }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<ServiceUser | null>(null);
   const [updatedUser, setUpdatedUser] = useState<ServiceUser | null>(null);
 
   const handleEditClick = (user: ServiceUser) => {
     setSelectedUser(user);
     setUpdatedUser({ ...user }); // Create a copy of the user data for editing
-    setIsModalOpen(true);
+    setIsEditModalOpen(true);
+  };
+
+  const handleProfileClick = (user: ServiceUser) => {
+    setSelectedUser(user);
+    setIsProfileModalOpen(true); // Open the profile modal
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -29,7 +35,7 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
     if (updatedUser) {
       // Here, you can update the user in the state or make an API call to update the data
       console.log("Updated User: ", updatedUser);
-      setIsModalOpen(false);
+      setIsEditModalOpen(false);
     }
   };
 
@@ -72,7 +78,10 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
                 >
                   Edit
                 </button>
-                <button className="px-3 py-1 bg-gray-500 text-white rounded-md">
+                <button
+                  onClick={() => handleProfileClick(user)}
+                  className="px-3 py-1 bg-gray-500 text-white rounded-md"
+                >
                   View Profile
                 </button>
               </td>
@@ -116,7 +125,10 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
               >
                 Edit
               </button>
-              <button className="flex-grow px-4 py-2 bg-gray-500 text-white rounded-md">
+              <button
+                onClick={() => handleProfileClick(user)}
+                className="flex-grow px-4 py-2 bg-gray-500 text-white rounded-md"
+              >
                 View Profile
               </button>
             </div>
@@ -124,8 +136,8 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
         ))}
       </div>
 
-      {/* Modal for editing user details */}
-      {isModalOpen && selectedUser && (
+      {/* Edit User Modal */}
+      {isEditModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-96">
             <h2 className="text-2xl font-semibold mb-4">Edit User</h2>
@@ -201,13 +213,36 @@ const ServiceUserList: React.FC<Props> = ({ users }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => setIsEditModalOpen(false)}
                   className="px-4 py-2 bg-gray-500 text-white rounded-md"
                 >
                   Cancel
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Profile Modal */}
+      {isProfileModalOpen && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-2xl font-semibold mb-4">User Profile</h2>
+            <div className="space-y-2">
+              <p><strong>Name:</strong> {selectedUser.name}</p>
+              <p><strong>Age:</strong> {selectedUser.age}</p>
+              <p><strong>Care Status:</strong> {selectedUser.careStatus}</p>
+              <p><strong>Next Appointment:</strong> {new Date(selectedUser.nextAppointment).toLocaleString()}</p>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setIsProfileModalOpen(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
